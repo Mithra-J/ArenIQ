@@ -1,3 +1,53 @@
+.dashboard {
+  font-family: system-ui, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.report-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.status {
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status.pending   { background: #fff3cd; color: #856404; }
+.status.acknowledged { background: #d4edda; color: #155724; }
+.status.in-progress { background: #cce5ff; color: #004085; }
+.status.resolved  { background: #d4edda; color: #155724; }
+
+.source {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+
 .App {
   text-align: center;
 }

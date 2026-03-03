@@ -26,9 +26,11 @@ import cv2
 import numpy as np
 import json
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
+from supabase import create_client, Client
 
 
 # ─────────────────────────────────────────────
@@ -56,6 +58,16 @@ MIN_ENCROACHMENT_AREA_PX = 50
 OUTPUT_CHANGE_MAP  = "water_change_map.png"    # Binary change mask
 OUTPUT_LABELLED    = "labelled_change_map.png" # Colour-coded by type
 OUTPUT_REPORT      = "encroachment_report.json"
+
+
+load_dotenv()
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE = os.getenv("SUPABASE_SERVICE_ROLE")
+
+if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE:
+    raise ValueError("Supabase environment variables not set")
+
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_ROLE)
 
 
 # ─────────────────────────────────────────────
@@ -269,6 +281,16 @@ def classify_zones(zones, diff, clf):
 
         zone["type"]       = prediction
         zone["confidence"] = confidence
+        # After classification
+        supabase.table("reports").insert({
+            "type": classification,           # e.g. "construction"
+            "description": "Auto-detected via satellite",
+            "latitude": centroid_lat,
+            "longitude": centroid_lon,
+            "image_url": uploaded_ndwi_diff_url,  # if you upload diff image to storage
+            "source": "satellite",
+            "status": "pending"
+        }).execute()
 
         print(f"  Zone {zone['id']:02d} → {prediction} ({confidence}% confidence) | "
               f"area={area_px}px | aspect={aspect_ratio}")
