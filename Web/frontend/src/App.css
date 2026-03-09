@@ -121,6 +121,7 @@ header {
   color: #2d3748;
 }
 
+/* NEW: Action buttons & filters */
 .filter-buttons {
   text-align: center;
   margin: 20px 0;
@@ -142,6 +143,26 @@ header {
   background: #3182ce;
   color: white;
 }
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn.acknowledge { background: #3182ce; }
+.btn.in-progress { background: #2b6cb0; }
+.btn.resolve { background: #10b981; }  /* Green for resolve */
+.btn:hover { opacity: 0.9; }
+.timestamp { color: #718096; font-size: 0.85rem; display: block; margin-top: 10px; }
 
 .report-card {
   border: 1px solid #e2e8f0;

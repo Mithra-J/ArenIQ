@@ -15,11 +15,17 @@
  * License : MIT
  */
 
+require('dotenv').config();
+console.log('=== ENV DEBUG ===');
+console.log('SUPABASE_URL     :', process.env.SUPABASE_URL);
+console.log('SUPABASE_SERVICE_ROLE :', process.env.SUPABASE_SERVICE_ROLE);
+console.log('PORT             :', process.env.PORT);
+console.log('=== END DEBUG ===');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY // Use service key for backend operations
+  process.env.SUPABASE_SERVICE_ROLE // Use service key for backend operations
 );
 
 // ─────────────────────────────────────────────

@@ -15,6 +15,12 @@
  * License : MIT
  */
 
+require('dotenv').config();
+console.log('=== ENV DEBUG ===');
+console.log('SUPABASE_URL     :', process.env.SUPABASE_URL);
+console.log('SUPABASE_SERVICE_ROLE :', process.env.SUPABASE_SERVICE_ROLE);
+console.log('PORT             :', process.env.PORT);
+console.log('=== END DEBUG ===');
 const express = require('express');
 const cors    = require('cors');
 const { createClient } = require('@supabase/supabase-js');
