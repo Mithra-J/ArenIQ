@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../main.dart';
-import 'home_screen.dart';
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
