@@ -1,0 +1,27 @@
+body{
+font-family: Arial;
+margin:0;
+}
+
+.navbar{
+display:flex;
+justify-content:space-between;
+background:#0b3d91;
+color:white;
+padding:15px;
+}
+
+.hero{
+text-align:center;
+padding:80px;
+}
+
+.about{
+padding:40px;
+}
+
+.stats{
+background:#f5f5f5;
+padding:20px;
+margin:20px;
+}
