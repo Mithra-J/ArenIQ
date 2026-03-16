@@ -25,7 +25,7 @@ import {
 
 function ChartPanel({ title, subtitle, children }) {
   return (
-    <section className="rounded-[28px] border border-sky-900/10 bg-white p-6 shadow-[0_24px_50px_-30px_rgba(15,23,42,0.35)]">
+    <section className="min-w-0 rounded-[28px] border border-sky-900/10 bg-white p-6 shadow-[0_24px_50px_-30px_rgba(15,23,42,0.35)]">
       <div className="mb-6">
         <h3 className="text-xl font-semibold text-slate-950">{title}</h3>
         <p className="mt-2 text-sm text-slate-600">{subtitle}</p>
@@ -64,7 +64,7 @@ function Dashboard() {
           title="Encroachment Trend"
           subtitle="Monthly comparison of detected encroachments and resolved actions."
         >
-          <div className="h-80">
+          <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={encroachmentTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
@@ -83,7 +83,7 @@ function Dashboard() {
           title="Monthly Monitoring Load"
           subtitle="Survey scan volume against alert creation across the current cycle."
         >
-          <div className="h-80">
+          <div className="h-80 min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={monthlyMonitoring}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />

@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
@@ -8,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Reports from "./pages/Reports";
 import AdminPanel from "./pages/AdminPanel";
+import AuthCallback from "./pages/AuthCallback";
 import SatelliteMonitoring from "./pages/SatelliteMonitoring";
 
 function PublicLayout({ children }) {
@@ -62,10 +64,20 @@ function App() {
           }
         />
         <Route
+          path="/auth/callback"
+          element={
+            <PublicLayout>
+              <AuthCallback />
+            </PublicLayout>
+          }
+        />
+        <Route
           path="/dashboard"
           element={
             <PortalLayout>
-              <Dashboard />
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
             </PortalLayout>
           }
         />
@@ -73,7 +85,9 @@ function App() {
           path="/monitoring"
           element={
             <PortalLayout>
-              <SatelliteMonitoring />
+              <ProtectedRoute>
+                <SatelliteMonitoring />
+              </ProtectedRoute>
             </PortalLayout>
           }
         />
@@ -81,7 +95,9 @@ function App() {
           path="/reports"
           element={
             <PortalLayout>
-              <Reports />
+              <ProtectedRoute>
+                <Reports />
+              </ProtectedRoute>
             </PortalLayout>
           }
         />
@@ -89,7 +105,9 @@ function App() {
           path="/admin"
           element={
             <PortalLayout>
-              <AdminPanel />
+              <ProtectedRoute>
+                <AdminPanel />
+              </ProtectedRoute>
             </PortalLayout>
           }
         />
