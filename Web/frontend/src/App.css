@@ -182,3 +182,14 @@
     border-right-color: var(--border);
   }
 }
+
+.severity-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.severity-badge.low      { background: #d1fae5; color: #065f46; }
+.severity-badge.medium   { background: #fef3c7; color: #92400e; }
+.severity-badge.high     { background: #fee2e2; color: #991b1b; }
+.severity-badge.critical { background: #7f1d1d; color: white; }

@@ -3,6 +3,17 @@ import axios from "axios";
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api",
   timeout: 10000,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("supabase.auth.token"); // or from your auth context
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 export async function fetchReports() {
@@ -14,6 +25,16 @@ export async function submitEncroachmentReport(payload) {
   const { data } = await api.post("/report", payload);
   return data;
 }
+
+export const acknowledgeReport = async (id) => {
+  const { data } = await api.put(`/api/reports/${id}/acknowledge`);
+  return data;
+};
+
+export const resolveReport = async (id) => {
+  const { data } = await api.put(`/api/reports/${id}/resolve`);
+  return data;
+};
 
 export async function fetchWaterbodies() {
   const { data } = await api.get("/waterbodies");
