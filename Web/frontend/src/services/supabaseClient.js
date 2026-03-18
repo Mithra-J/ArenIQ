@@ -2,6 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error(
+    "Missing Supabase frontend environment variables. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Web/frontend/.env and restart Vite.",
+  );
+}
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -26,12 +33,18 @@ export async function signInWithPassword({ email, password }) {
 }
 
 export async function signInWithGoogle() {
-  return supabase.auth.signInWithOAuth({
+  const response = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${appUrl}/auth/callback`,
     },
   });
+
+  if (response.error) {
+    console.error("[ArenIQ][OAuth] Google sign-in failed:", response.error);
+  }
+
+  return response;
 }
 
 export async function signOutUser() {
@@ -44,5 +57,9 @@ export async function getCurrentSession() {
 }
 
 export async function exchangeCodeForSession(currentUrl) {
-  return supabase.auth.exchangeCodeForSession(currentUrl);
+  const response = await supabase.auth.exchangeCodeForSession(currentUrl);
+  if (response.error) {
+    console.error("[ArenIQ][OAuth] Callback exchange failed:", response.error);
+  }
+  return response;
 }

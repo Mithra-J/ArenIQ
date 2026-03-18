@@ -33,6 +33,7 @@ function AuthCallback() {
         }
       } catch (error) {
         if (!mounted) return;
+        console.error("[ArenIQ][OAuth] Auth callback error:", error);
         setStatus("error");
         setErrorMessage(error.message || "Unable to complete Google sign-in.");
       }
