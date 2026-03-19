@@ -273,3 +273,9 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 Built with ❤️ for Tamil Nadu's waterbodies at **Foss Hack 2026**.
 
 > *"Water is not just a resource — it is life. It is our duty to protect it."*
+
+| Member | GitHub |
+|---|---|
+| Mithra J | [@Mithra-J](https://github.com/Mithra-J) |
+| Mohammed Faiz Y| [@FAIZ1409](https://github.com/FAIZ1409) |
+| Mohamed Marzuq Tharif | [@mohamedmarzuqtharif](https://github.com/mohamedmarzuqtharif) |
