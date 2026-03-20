@@ -63,3 +63,52 @@ export async function exchangeCodeForSession(currentUrl) {
   }
   return response;
 }
+// ─────────────────────────────────────────────
+// REPORTS — Real Supabase data
+// ─────────────────────────────────────────────
+
+// Get all reports
+export const getReports = async () => {
+  const { data, error } = await supabase
+    .from('reports')
+    .select('*')
+    .order('created_at', { ascending: false });
+  return data || [];
+};
+
+// Get stats
+export const getStats = async () => {
+  const { count: total } = await supabase
+    .from('reports')
+    .select('*', { count: 'exact', head: true });
+  
+  const { count: resolved } = await supabase
+    .from('reports')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'resolved');
+
+  const { count: pending } = await supabase
+    .from('reports')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending');
+
+  return { total, resolved, pending };
+};
+
+// Approve report
+export const approveReport = async (id) => {
+  const { error } = await supabase
+    .from('reports')
+    .update({ status: 'resolved' })
+    .eq('id', id);
+  return !error;
+};
+
+// Reject report
+export const rejectReport = async (id) => {
+  const { error } = await supabase
+    .from('reports')
+    .update({ status: 'rejected' })
+    .eq('id', id);
+  return !error;
+};
