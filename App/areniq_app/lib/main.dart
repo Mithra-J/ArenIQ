@@ -7,9 +7,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'YOUR_SUPABASE_URL',       // Replace with your Supabase project URL
-    anonKey: 'YOUR_SUPABASE_ANON_KEY', // Replace with your Supabase anon key
-  );
+    url: 'abc',       // Replace with your Supabase project URL
+    anonKey: 'abc';
 
   runApp(const ArenIQApp());
 }
