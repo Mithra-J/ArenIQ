@@ -1,5 +1,17 @@
+# Environment files
 .env
+.env.example
+
+# Node modules
 node_modules/
 backend/node_modules/
-dist
-buildx  
+
+# Build folders
+dist/
+build/
+
+# Satellite outputs (VERY IMPORTANT)
+labelled_change_map.png
+ndwi_*.png
+*_map.png
+sentinel_downloads/

@@ -42,10 +42,10 @@ NDWI_PREVIOUS = "ndwi_2023.png"   # Baseline image (older period)
 NDWI_CURRENT  = "ndwi_2024.png"   # Current image (latest period)
 
 # Change detection threshold (0–255)
-CHANGE_THRESHOLD = 30
+CHANGE_THRESHOLD = 50
 
 # Minimum contiguous pixel area to count as an encroachment zone
-MIN_ENCROACHMENT_AREA_PX = 50
+MIN_ENCROACHMENT_AREA_PX = 500
 
 # Output files
 OUTPUT_CHANGE_MAP  = "water_change_map.png"    # Binary change mask

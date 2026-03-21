@@ -1,0 +1,1366 @@
+{
+  "generated_at": "2026-03-21T20:19:07.712972Z",
+  "total_zones": 80,
+  "encroachments": [
+    {
+      "zone_id": 359,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1160,
+      "centroid": [
+        2944,
+        398
+      ],
+      "bbox": [
+        2877,
+        258,
+        116,
+        429
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 1157,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 830,
+      "centroid": [
+        10010,
+        949
+      ],
+      "bbox": [
+        9995,
+        915,
+        36,
+        63
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 1511,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 661,
+      "centroid": [
+        2727,
+        1363
+      ],
+      "bbox": [
+        2679,
+        1155,
+        95,
+        418
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 1805,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 664,
+      "centroid": [
+        4154,
+        1372
+      ],
+      "bbox": [
+        4135,
+        1351,
+        41,
+        49
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 2276,
+      "type": "Land Filling",
+      "confidence": 36.0,
+      "area_px": 678,
+      "centroid": [
+        10516,
+        1678
+      ],
+      "bbox": [
+        10500,
+        1663,
+        32,
+        46
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 2872,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 610,
+      "centroid": [
+        2523,
+        2251
+      ],
+      "bbox": [
+        2479,
+        2050,
+        90,
+        402
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 4242,
+      "type": "Waste Dumping",
+      "confidence": 51.0,
+      "area_px": 559,
+      "centroid": [
+        7739,
+        2818
+      ],
+      "bbox": [
+        7718,
+        2803,
+        49,
+        31
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 4295,
+      "type": "Land Filling",
+      "confidence": 66.0,
+      "area_px": 1205,
+      "centroid": [
+        7719,
+        2852
+      ],
+      "bbox": [
+        7687,
+        2826,
+        77,
+        54
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 4459,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 2561,
+      "centroid": [
+        8048,
+        2964
+      ],
+      "bbox": [
+        8010,
+        2924,
+        69,
+        72
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 4484,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 604,
+      "centroid": [
+        2324,
+        3145
+      ],
+      "bbox": [
+        2282,
+        2932,
+        88,
+        426
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 4864,
+      "type": "Land Filling",
+      "confidence": 39.0,
+      "area_px": 715,
+      "centroid": [
+        8480,
+        3172
+      ],
+      "bbox": [
+        8463,
+        3146,
+        42,
+        49
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 5138,
+      "type": "Land Filling",
+      "confidence": 65.0,
+      "area_px": 1678,
+      "centroid": [
+        7700,
+        3338
+      ],
+      "bbox": [
+        7667,
+        3312,
+        63,
+        53
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 5210,
+      "type": "Construction",
+      "confidence": 37.0,
+      "area_px": 600,
+      "centroid": [
+        7676,
+        3368
+      ],
+      "bbox": [
+        7660,
+        3356,
+        35,
+        32
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 5514,
+      "type": "Land Filling",
+      "confidence": 36.0,
+      "area_px": 683,
+      "centroid": [
+        4668,
+        3639
+      ],
+      "bbox": [
+        4654,
+        3619,
+        38,
+        53
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 6024,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 588,
+      "centroid": [
+        2119,
+        4052
+      ],
+      "bbox": [
+        2074,
+        3837,
+        96,
+        431
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 6050,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1933,
+      "centroid": [
+        4040,
+        3885
+      ],
+      "bbox": [
+        4012,
+        3846,
+        76,
+        96
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 6200,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 577,
+      "centroid": [
+        4479,
+        3929
+      ],
+      "bbox": [
+        4461,
+        3904,
+        32,
+        59
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 6888,
+      "type": "Land Filling",
+      "confidence": 37.0,
+      "area_px": 696,
+      "centroid": [
+        2984,
+        4251
+      ],
+      "bbox": [
+        2967,
+        4226,
+        33,
+        50
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 6923,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1038,
+      "centroid": [
+        8241,
+        4277
+      ],
+      "bbox": [
+        8228,
+        4245,
+        40,
+        58
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 7581,
+      "type": "Waste Dumping",
+      "confidence": 40.0,
+      "area_px": 574,
+      "centroid": [
+        4359,
+        4641
+      ],
+      "bbox": [
+        4344,
+        4627,
+        39,
+        26
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 7735,
+      "type": "Waste Dumping",
+      "confidence": 55.0,
+      "area_px": 660,
+      "centroid": [
+        8305,
+        4717
+      ],
+      "bbox": [
+        8260,
+        4702,
+        82,
+        37
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 7826,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 581,
+      "centroid": [
+        1914,
+        4959
+      ],
+      "bbox": [
+        1867,
+        4751,
+        94,
+        423
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 8289,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 529,
+      "centroid": [
+        10131,
+        5008
+      ],
+      "bbox": [
+        10119,
+        4984,
+        31,
+        42
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 8421,
+      "type": "Land Filling",
+      "confidence": 39.0,
+      "area_px": 706,
+      "centroid": [
+        10759,
+        5096
+      ],
+      "bbox": [
+        10740,
+        5061,
+        44,
+        72
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 9037,
+      "type": "Land Filling",
+      "confidence": 65.0,
+      "area_px": 845,
+      "centroid": [
+        7673,
+        5425
+      ],
+      "bbox": [
+        7653,
+        5406,
+        50,
+        43
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 9610,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 532,
+      "centroid": [
+        9501,
+        5626
+      ],
+      "bbox": [
+        9488,
+        5604,
+        32,
+        43
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 9625,
+      "type": "Land Filling",
+      "confidence": 48.0,
+      "area_px": 1517,
+      "centroid": [
+        9296,
+        5633
+      ],
+      "bbox": [
+        9261,
+        5608,
+        75,
+        46
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 9670,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 571,
+      "centroid": [
+        1718,
+        5830
+      ],
+      "bbox": [
+        1673,
+        5626,
+        91,
+        411
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 10341,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 811,
+      "centroid": [
+        7198,
+        5923
+      ],
+      "bbox": [
+        7176,
+        5903,
+        47,
+        42
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 10532,
+      "type": "Land Filling",
+      "confidence": 65.0,
+      "area_px": 796,
+      "centroid": [
+        9126,
+        5987
+      ],
+      "bbox": [
+        9107,
+        5973,
+        46,
+        37
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 10757,
+      "type": "Land Filling",
+      "confidence": 67.0,
+      "area_px": 3305,
+      "centroid": [
+        9340,
+        6088
+      ],
+      "bbox": [
+        9285,
+        6051,
+        121,
+        87
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 11955,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 543,
+      "centroid": [
+        1515,
+        6727
+      ],
+      "bbox": [
+        1470,
+        6520,
+        93,
+        414
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 12150,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 2203,
+      "centroid": [
+        8663,
+        6668
+      ],
+      "bbox": [
+        8607,
+        6626,
+        99,
+        91
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 12270,
+      "type": "Construction",
+      "confidence": 35.0,
+      "area_px": 500,
+      "centroid": [
+        9256,
+        6692
+      ],
+      "bbox": [
+        9237,
+        6679,
+        38,
+        30
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 12417,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 580,
+      "centroid": [
+        10454,
+        6794
+      ],
+      "bbox": [
+        10441,
+        6749,
+        28,
+        68
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 13076,
+      "type": "Land Filling",
+      "confidence": 37.0,
+      "area_px": 693,
+      "centroid": [
+        6881,
+        7175
+      ],
+      "bbox": [
+        6867,
+        7144,
+        26,
+        62
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 13213,
+      "type": "Waste Dumping",
+      "confidence": 55.0,
+      "area_px": 663,
+      "centroid": [
+        6985,
+        7205
+      ],
+      "bbox": [
+        6955,
+        7191,
+        58,
+        28
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 13644,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1092,
+      "centroid": [
+        5598,
+        7406
+      ],
+      "bbox": [
+        5580,
+        7385,
+        46,
+        55
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 13762,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 2727,
+      "centroid": [
+        8112,
+        7473
+      ],
+      "bbox": [
+        8065,
+        7434,
+        79,
+        94
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 14040,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 566,
+      "centroid": [
+        6416,
+        7564
+      ],
+      "bbox": [
+        6401,
+        7538,
+        31,
+        46
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 14067,
+      "type": "Land Filling",
+      "confidence": 48.0,
+      "area_px": 2394,
+      "centroid": [
+        7989,
+        7574
+      ],
+      "bbox": [
+        7940,
+        7545,
+        100,
+        62
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 14299,
+      "type": "Land Filling",
+      "confidence": 39.0,
+      "area_px": 732,
+      "centroid": [
+        7714,
+        7653
+      ],
+      "bbox": [
+        7694,
+        7635,
+        40,
+        57
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 14403,
+      "type": "Land Filling",
+      "confidence": 62.0,
+      "area_px": 883,
+      "centroid": [
+        8297,
+        7687
+      ],
+      "bbox": [
+        8270,
+        7670,
+        50,
+        38
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 14584,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 529,
+      "centroid": [
+        8536,
+        7744
+      ],
+      "bbox": [
+        8511,
+        7716,
+        49,
+        55
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 14835,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 900,
+      "centroid": [
+        4720,
+        7867
+      ],
+      "bbox": [
+        4706,
+        7845,
+        38,
+        44
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 15141,
+      "type": "Waste Dumping",
+      "confidence": 50.0,
+      "area_px": 563,
+      "centroid": [
+        6306,
+        7983
+      ],
+      "bbox": [
+        6279,
+        7967,
+        58,
+        38
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 15340,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 575,
+      "centroid": [
+        9933,
+        8054
+      ],
+      "bbox": [
+        9913,
+        8029,
+        42,
+        66
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 15827,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 878,
+      "centroid": [
+        7508,
+        8212
+      ],
+      "bbox": [
+        7494,
+        8188,
+        33,
+        56
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16232,
+      "type": "Land Filling",
+      "confidence": 65.0,
+      "area_px": 1100,
+      "centroid": [
+        6999,
+        8319
+      ],
+      "bbox": [
+        6965,
+        8299,
+        61,
+        41
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16268,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 2191,
+      "centroid": [
+        8239,
+        8347
+      ],
+      "bbox": [
+        8209,
+        8309,
+        61,
+        90
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16356,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 5085,
+      "centroid": [
+        8561,
+        8377
+      ],
+      "bbox": [
+        8515,
+        8331,
+        96,
+        100
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16468,
+      "type": "Land Filling",
+      "confidence": 46.0,
+      "area_px": 747,
+      "centroid": [
+        8001,
+        8385
+      ],
+      "bbox": [
+        7975,
+        8364,
+        56,
+        37
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16631,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 565,
+      "centroid": [
+        7371,
+        8454
+      ],
+      "bbox": [
+        7353,
+        8430,
+        36,
+        46
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16642,
+      "type": "Land Filling",
+      "confidence": 62.0,
+      "area_px": 1267,
+      "centroid": [
+        7997,
+        8451
+      ],
+      "bbox": [
+        7973,
+        8432,
+        54,
+        41
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 16701,
+      "type": "Land Filling",
+      "confidence": 51.0,
+      "area_px": 923,
+      "centroid": [
+        8549,
+        8462
+      ],
+      "bbox": [
+        8526,
+        8448,
+        50,
+        32
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17292,
+      "type": "Land Filling",
+      "confidence": 67.0,
+      "area_px": 1120,
+      "centroid": [
+        8583,
+        8631
+      ],
+      "bbox": [
+        8556,
+        8613,
+        57,
+        41
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17350,
+      "type": "Waste Dumping",
+      "confidence": 55.0,
+      "area_px": 655,
+      "centroid": [
+        7733,
+        8638
+      ],
+      "bbox": [
+        7707,
+        8625,
+        51,
+        30
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17386,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 560,
+      "centroid": [
+        8631,
+        8651
+      ],
+      "bbox": [
+        8619,
+        8630,
+        25,
+        45
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17471,
+      "type": "Waste Dumping",
+      "confidence": 55.0,
+      "area_px": 544,
+      "centroid": [
+        7750,
+        8658
+      ],
+      "bbox": [
+        7730,
+        8648,
+        46,
+        25
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17660,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 1996,
+      "centroid": [
+        8954,
+        8728
+      ],
+      "bbox": [
+        8921,
+        8698,
+        73,
+        66
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17662,
+      "type": "Land Filling",
+      "confidence": 62.0,
+      "area_px": 1090,
+      "centroid": [
+        8573,
+        8725
+      ],
+      "bbox": [
+        8541,
+        8701,
+        71,
+        53
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 17927,
+      "type": "Land Filling",
+      "confidence": 65.0,
+      "area_px": 1014,
+      "centroid": [
+        6050,
+        8790
+      ],
+      "bbox": [
+        6023,
+        8773,
+        65,
+        44
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 18038,
+      "type": "Land Filling",
+      "confidence": 51.0,
+      "area_px": 747,
+      "centroid": [
+        7208,
+        8820
+      ],
+      "bbox": [
+        7186,
+        8796,
+        36,
+        56
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 18448,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 2512,
+      "centroid": [
+        8902,
+        8949
+      ],
+      "bbox": [
+        8875,
+        8909,
+        64,
+        71
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 18584,
+      "type": "Land Filling",
+      "confidence": 67.0,
+      "area_px": 2626,
+      "centroid": [
+        7922,
+        8981
+      ],
+      "bbox": [
+        7871,
+        8940,
+        116,
+        86
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 18624,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1444,
+      "centroid": [
+        7167,
+        8979
+      ],
+      "bbox": [
+        7143,
+        8951,
+        46,
+        61
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 18820,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 894,
+      "centroid": [
+        8587,
+        9033
+      ],
+      "bbox": [
+        8567,
+        9004,
+        44,
+        53
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 19260,
+      "type": "Construction",
+      "confidence": 37.0,
+      "area_px": 567,
+      "centroid": [
+        6606,
+        9134
+      ],
+      "bbox": [
+        6589,
+        9116,
+        35,
+        36
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 20835,
+      "type": "Land Filling",
+      "confidence": 51.0,
+      "area_px": 737,
+      "centroid": [
+        7463,
+        9603
+      ],
+      "bbox": [
+        7448,
+        9575,
+        40,
+        57
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 21560,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1359,
+      "centroid": [
+        10948,
+        9833
+      ],
+      "bbox": [
+        10926,
+        9801,
+        43,
+        61
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 21760,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 841,
+      "centroid": [
+        10878,
+        9878
+      ],
+      "bbox": [
+        10857,
+        9856,
+        41,
+        45
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 22257,
+      "type": "Land Filling",
+      "confidence": 39.0,
+      "area_px": 731,
+      "centroid": [
+        8017,
+        9980
+      ],
+      "bbox": [
+        8002,
+        9960,
+        33,
+        45
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 22841,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1259,
+      "centroid": [
+        9830,
+        10133
+      ],
+      "bbox": [
+        9811,
+        10087,
+        43,
+        80
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 22877,
+      "type": "Construction",
+      "confidence": 42.0,
+      "area_px": 580,
+      "centroid": [
+        9801,
+        10106
+      ],
+      "bbox": [
+        9786,
+        10092,
+        29,
+        38
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 22933,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 3159,
+      "centroid": [
+        7795,
+        10155
+      ],
+      "bbox": [
+        7755,
+        10103,
+        89,
+        100
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 23193,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 1352,
+      "centroid": [
+        5711,
+        10202
+      ],
+      "bbox": [
+        5680,
+        10170,
+        63,
+        57
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 23260,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 1158,
+      "centroid": [
+        9085,
+        10219
+      ],
+      "bbox": [
+        9062,
+        10188,
+        47,
+        60
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 23425,
+      "type": "Land Filling",
+      "confidence": 55.0,
+      "area_px": 803,
+      "centroid": [
+        5475,
+        10250
+      ],
+      "bbox": [
+        5457,
+        10222,
+        36,
+        60
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 23440,
+      "type": "Land Filling",
+      "confidence": 65.0,
+      "area_px": 1158,
+      "centroid": [
+        5527,
+        10251
+      ],
+      "bbox": [
+        5494,
+        10226,
+        58,
+        49
+      ],
+      "status": "pending_alert"
+    },
+    {
+      "zone_id": 24556,
+      "type": "Land Filling",
+      "confidence": 60.0,
+      "area_px": 1803,
+      "centroid": [
+        8980,
+        10567
+      ],
+      "bbox": [
+        8943,
+        10536,
+        73,
+        65
+      ],
+      "status": "pending_alert"
+    }
+  ]
+}

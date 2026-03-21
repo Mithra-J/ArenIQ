@@ -1,27 +1,8 @@
 """
 fetch_sentinel.py — ArenIQ Automated Sentinel-2 Image Fetcher
 =============================================================
-Automatically downloads the latest Sentinel-2 satellite images
-for Chengalpattu District from the Copernicus Data Space Ecosystem.
-
-This script is called by cron_runner.py before running ndwi_detection.py
-so the pipeline always uses fresh, real satellite data.
-
-How it works:
-  1. Connects to Copernicus Data Space API using your free account
-  2. Searches for latest Sentinel-2 L2A images over Chengalpattu
-  3. Downloads the Green (B03) and NIR (B08) bands
-  4. Computes NDWI = (B03 - B08) / (B03 + B08)
-  5. Saves as grayscale PNGs for ndwi_detection.py to process
-
-Requirements:
-  pip install sentinelsat rasterio numpy opencv-python python-dotenv
-
-Copernicus Account:
-  Register free at: https://dataspace.copernicus.eu
-  Add credentials to .env:
-    COPERNICUS_USER=your-email
-    COPERNICUS_PASSWORD=your-password
+Downloads latest Sentinel-2 images for Chengalpattu District
+using the Copernicus Data Space Ecosystem API (CDSE).
 
 Author  : ArenIQ Team
 License : MIT
@@ -29,301 +10,318 @@ License : MIT
 
 import os
 import cv2
+import zipfile
+import requests
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables
 load_dotenv()
 
 # ─────────────────────────────────────────────
 # CONFIGURATION
 # ─────────────────────────────────────────────
 
-# Copernicus credentials from .env
 COPERNICUS_USER     = os.getenv("COPERNICUS_USER")
 COPERNICUS_PASSWORD = os.getenv("COPERNICUS_PASSWORD")
 
 # Chengalpattu District bounding box (WGS84)
-# Format: (min_lon, min_lat, max_lon, max_lat)
-CHENGALPATTU_BBOX = (79.6, 12.1, 80.3, 12.9)
+BBOX = {
+    "north": 12.9,
+    "south": 12.1,
+    "west" : 79.6,
+    "east" : 80.3,
+}
 
-# Sentinel-2 settings
-PLATFORM        = "SENTINEL-2"
-PRODUCT_TYPE    = "S2MSI2A"       # Level 2A = surface reflectance (best for NDWI)
-MAX_CLOUD_COVER = 30              # Skip images with >30% cloud cover
-DOWNLOAD_DIR    = Path("sentinel_downloads")  # Temp folder for raw downloads
+MAX_CLOUD_COVER = 30
+DOWNLOAD_DIR    = Path("sentinel_downloads")
+NDWI_CURRENT    = "ndwi_2024.png"
+NDWI_PREVIOUS   = "ndwi_2023.png"
 
-# Output NDWI images (fed into ndwi_detection.py)
-NDWI_CURRENT  = "ndwi_2024.png"   # Latest image
-NDWI_PREVIOUS = "ndwi_2023.png"   # One year earlier for comparison
+# Copernicus Data Space API endpoints
+AUTH_URL      = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
+SEARCH_URL    = "https://catalogue.dataspace.copernicus.eu/odata/v1/Products"
+DOWNLOAD_BASE = "https://zipper.dataspace.copernicus.eu/odata/v1/Products"
+
 
 # ─────────────────────────────────────────────
-# CONNECT TO COPERNICUS
+# AUTHENTICATION
 # ─────────────────────────────────────────────
 
-def connect_to_copernicus():
+def get_access_token():
     """
-    Connects to the Copernicus Data Space Ecosystem API.
-    Uses sentinelsat library (open source, Apache 2.0).
-
-    Returns:
-        SentinelAPI instance
+    Gets OAuth2 access token from Copernicus Data Space.
     """
-    try:
-        from sentinelsat import SentinelAPI
-    except ImportError:
-        raise ImportError(
-            "sentinelsat not installed. Run: pip install sentinelsat"
-        )
-
     if not COPERNICUS_USER or not COPERNICUS_PASSWORD:
         raise ValueError(
-            "Copernicus credentials missing. Add to .env:\n"
+            "Copernicus credentials missing!\n"
+            "Add to .env:\n"
             "  COPERNICUS_USER=your-email\n"
             "  COPERNICUS_PASSWORD=your-password"
         )
 
-    print(f"[→] Connecting to Copernicus as {COPERNICUS_USER}...")
+    print(f"[→] Authenticating as {COPERNICUS_USER}...")
 
-    api = SentinelAPI(
-        COPERNICUS_USER,
-        COPERNICUS_PASSWORD,
-        "https://apihub.copernicus.eu/apihub"
-    )
+    response = requests.post(AUTH_URL, data={
+        "grant_type": "password",
+        "username"  : COPERNICUS_USER,
+        "password"  : COPERNICUS_PASSWORD,
+        "client_id" : "cdse-public",
+    })
 
-    print("[✓] Connected to Copernicus Data Space")
-    return api
+    if response.status_code != 200:
+        raise Exception(f"Authentication failed: {response.status_code} {response.text}")
+
+    token = response.json()["access_token"]
+    print("[✓] Authentication successful")
+    return token
 
 
 # ─────────────────────────────────────────────
 # SEARCH FOR IMAGES
 # ─────────────────────────────────────────────
 
-def search_sentinel_images(api, date_from, date_to):
+def search_images(date_from, date_to):
     """
-    Searches for Sentinel-2 L2A images over Chengalpattu District
-    within the given date range.
-
-    Args:
-        api       : SentinelAPI instance
-        date_from : Start date (datetime)
-        date_to   : End date (datetime)
-
-    Returns:
-        GeoDataFrame of matching products, sorted by cloud cover
+    Searches for Sentinel-2 images over Chengalpattu using OData API.
     """
-    from sentinelsat import geojson_to_wkt
-    from shapely.geometry import box
-
-    # Create bounding box polygon for Chengalpattu
-    footprint = geojson_to_wkt(
-        box(*CHENGALPATTU_BBOX).__geo_interface__
+    polygon = (
+        f"POLYGON(("
+        f"{BBOX['west']} {BBOX['south']},"
+        f"{BBOX['east']} {BBOX['south']},"
+        f"{BBOX['east']} {BBOX['north']},"
+        f"{BBOX['west']} {BBOX['north']},"
+        f"{BBOX['west']} {BBOX['south']}"
+        f"))"
     )
 
-    print(f"[→] Searching for images from {date_from.date()} to {date_to.date()}...")
+    date_from_str = date_from.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    date_to_str   = date_to.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-    products = api.query(
-        footprint,
-        date=(date_from, date_to),
-        platformname=PLATFORM,
-        producttype=PRODUCT_TYPE,
-        cloudcoverpercentage=(0, MAX_CLOUD_COVER),
-    )
+    print(f"[→] Searching {date_from.date()} to {date_to.date()}...")
 
-    if not products:
-        print(f"[!] No images found for this date range with <{MAX_CLOUD_COVER}% cloud cover")
-        return None
+    params = {
+        "$filter": (
+            f"Collection/Name eq 'SENTINEL-2' and "
+            f"ContentDate/Start gt {date_from_str} and "
+            f"ContentDate/Start lt {date_to_str} and "
+            f"OData.CSC.Intersects(area=geography'SRID=4326;{polygon}')"
+        ),
+        "$top": "5",
+        "$orderby": "ContentDate/Start desc",
+    }
 
-    # Convert to dataframe and sort by cloud cover (least cloudy first)
-    products_df = api.to_dataframe(products)
-    products_df = products_df.sort_values("cloudcoverpercentage")
+    response = requests.get(SEARCH_URL, params=params)
 
-    print(f"[✓] Found {len(products_df)} image(s) — using least cloudy one "
-          f"({products_df.iloc[0]['cloudcoverpercentage']:.1f}% cloud cover)")
+    if response.status_code != 200:
+        print(f"[✗] Search failed: {response.status_code}")
+        print(f"    Error: {response.text}")
+        return []
 
-    return products_df
+    products = response.json().get("value", [])
+    print(f"[✓] Found {len(products)} image(s)")
+    return products
 
 
 # ─────────────────────────────────────────────
 # DOWNLOAD IMAGE
 # ─────────────────────────────────────────────
 
-def download_image(api, product_id, output_dir):
+def download_image(product, token, output_dir):
     """
-    Downloads a single Sentinel-2 product to the output directory.
-
-    Args:
-        api        : SentinelAPI instance
-        product_id : UUID of the product to download
-        output_dir : Path to save the downloaded files
-
-    Returns:
-        Path to the downloaded .SAFE folder
+    Downloads a Sentinel-2 product zip file using OAuth2 token.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"[→] Downloading image {product_id}...")
-    print(f"    This may take a few minutes depending on your connection.")
+    product_id   = product["Id"]
+    product_name = product["Name"]
+    output_path  = output_dir / f"{product_name}.zip"
 
-    api.download(product_id, directory_path=output_dir)
+    if output_path.exists():
+        print(f"[✓] Already downloaded: {product_name}")
+        return output_path
 
-    # Find the .SAFE folder that was just downloaded
-    safe_dirs = list(output_dir.glob("*.SAFE"))
-    if not safe_dirs:
-        raise FileNotFoundError("Download succeeded but .SAFE folder not found")
+    print(f"[→] Downloading {product_name}...")
+    print(f"    This may take several minutes (files are ~800MB)...")
 
-    safe_path = safe_dirs[-1]  # Most recently modified
-    print(f"[✓] Downloaded: {safe_path.name}")
-    return safe_path
+    url = f"{DOWNLOAD_BASE}({product_id})/$value"
+
+    with requests.get(
+        url,
+        headers={"Authorization": f"Bearer {token}"},
+        stream=True,
+        timeout=600
+    ) as response:
+        if response.status_code != 200:
+            print(f"[✗] Download failed: {response.status_code}")
+            return None
+
+        total      = int(response.headers.get("content-length", 0))
+        downloaded = 0
+
+        with open(output_path, "wb") as f:
+            for chunk in response.iter_content(chunk_size=65536):
+                f.write(chunk)
+                downloaded += len(chunk)
+                if total:
+                    pct = (downloaded / total) * 100
+                    mb  = downloaded / (1024 * 1024)
+                    print(f"\r    {pct:.1f}% ({mb:.0f} MB)", end="", flush=True)
+
+    print(f"\n[✓] Downloaded → {output_path}")
+    return output_path
+
+
+# ─────────────────────────────────────────────
+# FIND BANDS IN ZIP
+# ─────────────────────────────────────────────
+
+def find_bands(zip_file):
+    """
+    Finds B03 (Green) and B08 (NIR) band files inside a Sentinel-2 zip.
+    Supports both L2A (10m) and L1C formats.
+    """
+    all_files = zip_file.namelist()
+    b03_file = b08_file = None
+
+    # Priority 1: L2A 10m bands
+    for name in all_files:
+        if "B03_10m.jp2" in name:
+            b03_file = name
+        elif "B08_10m.jp2" in name:
+            b08_file = name
+
+    # Priority 2: L1C or other resolution bands
+    if not b03_file or not b08_file:
+        for name in all_files:
+            if name.endswith(".jp2"):
+                if "B03" in name and not b03_file:
+                    b03_file = name
+                elif "B08" in name and not b08_file:
+                    b08_file = name
+
+    # Priority 3: Any jp2 with band reference
+    if not b03_file or not b08_file:
+        for name in all_files:
+            if name.endswith(".jp2"):
+                if "_B03" in name and not b03_file:
+                    b03_file = name
+                elif "_B08" in name and not b08_file:
+                    b08_file = name
+
+    return b03_file, b08_file
 
 
 # ─────────────────────────────────────────────
 # EXTRACT BANDS + COMPUTE NDWI
 # ─────────────────────────────────────────────
 
-def compute_ndwi_from_safe(safe_path, output_path):
+def compute_ndwi_from_zip(zip_path, output_path):
     """
-    Extracts Green (B03) and NIR (B08) bands from a Sentinel-2 .SAFE folder,
-    computes NDWI, and saves as a grayscale PNG.
+    Extracts B03 (Green) and B08 (NIR) bands from the downloaded zip,
+    computes NDWI = (Green - NIR) / (Green + NIR),
+    and saves as grayscale PNG for ndwi_detection.py.
 
-    NDWI = (Green - NIR) / (Green + NIR)
-      - Values near +1 = water
-      - Values near -1 = land/vegetation
-    Scaled to 0-255 grayscale: bright = water, dark = land
-
-    Args:
-        safe_path   : Path to the .SAFE folder
-        output_path : Where to save the NDWI grayscale PNG
+    NDWI > 0 = water, NDWI < 0 = land/vegetation
+    Scaled to 0-255: bright = water, dark = land
     """
     try:
         import rasterio
         from rasterio.enums import Resampling
     except ImportError:
-        raise ImportError("rasterio not installed. Run: pip install rasterio")
+        raise ImportError("Run: pip install rasterio")
 
-    # Find B03 (Green) and B08 (NIR) band files inside .SAFE
-    # Sentinel-2 L2A stores 10m bands in GRANULE/.../IMG_DATA/R10m/
-    band_paths = {
-        "B03": None,
-        "B08": None,
-    }
+    print(f"[→] Extracting bands from zip...")
 
-    for band_name in band_paths:
-        matches = list(safe_path.rglob(f"*_{band_name}_10m.jp2"))
-        if matches:
-            band_paths[band_name] = matches[0]
-        else:
-            # Fallback: search without resolution suffix
-            matches = list(safe_path.rglob(f"*{band_name}*.jp2"))
-            if matches:
-                band_paths[band_name] = matches[0]
+    with zipfile.ZipFile(zip_path, 'r') as z:
+        b03_file, b08_file = find_bands(z)
 
-    if not band_paths["B03"] or not band_paths["B08"]:
-        raise FileNotFoundError(
-            f"Could not find B03/B08 bands in {safe_path}. "
-            f"Found: {list(safe_path.rglob('*.jp2'))}"
-        )
+        if not b03_file or not b08_file:
+            print("[✗] Could not find B03/B08 bands in zip")
+            print(f"    Available jp2 files: {[n for n in z.namelist() if n.endswith('.jp2')][:5]}")
+            return None
 
-    print(f"[✓] Found B03 (Green): {band_paths['B03'].name}")
-    print(f"[✓] Found B08 (NIR)  : {band_paths['B08'].name}")
+        print(f"[✓] Found B03: {b03_file.split('/')[-1]}")
+        print(f"[✓] Found B08: {b08_file.split('/')[-1]}")
 
-    # Read both bands
-    with rasterio.open(band_paths["B03"]) as src:
+        z.extract(b03_file, zip_path.parent)
+        z.extract(b08_file, zip_path.parent)
+
+    b03_path = zip_path.parent / b03_file
+    b08_path = zip_path.parent / b08_file
+
+    # Read Green band
+    with rasterio.open(b03_path) as src:
         green = src.read(1).astype(np.float32)
 
-    with rasterio.open(band_paths["B08"]) as src:
+    # Read NIR band (resample to match green resolution if needed)
+    with rasterio.open(b08_path) as src:
         nir = src.read(
             1,
             out_shape=(green.shape[0], green.shape[1]),
             resampling=Resampling.bilinear
         ).astype(np.float32)
 
-    # Compute NDWI: (Green - NIR) / (Green + NIR)
-    # Add small epsilon to avoid division by zero
-    epsilon = 1e-10
-    ndwi = (green - nir) / (green + nir + epsilon)
+    # Compute NDWI = (Green - NIR) / (Green + NIR)
+    epsilon  = 1e-10
+    ndwi     = (green - nir) / (green + nir + epsilon)
 
-    # Scale from [-1, 1] to [0, 255] for grayscale PNG
-    # NDWI = 1.0 → 255 (bright = water)
-    # NDWI = -1.0 → 0   (dark = land)
+    # Scale [-1, 1] → [0, 255] grayscale
     ndwi_scaled = ((ndwi + 1) / 2 * 255).astype(np.uint8)
 
-    # Save as grayscale PNG
     cv2.imwrite(str(output_path), ndwi_scaled)
-    print(f"[✓] NDWI image saved → {output_path}")
 
-    # Print water coverage stats
-    water_pixels = np.sum(ndwi > 0)
-    total_pixels = ndwi.size
-    water_pct = (water_pixels / total_pixels) * 100
-    print(f"    Water coverage: {water_pct:.1f}% of image")
+    water_pct = (np.sum(ndwi > 0) / ndwi.size) * 100
+    print(f"[✓] NDWI saved → {output_path}")
+    print(f"    Water coverage: {water_pct:.1f}%")
 
     return ndwi_scaled
 
 
 # ─────────────────────────────────────────────
-# MAIN — FETCH BOTH IMAGES
+# MAIN
 # ─────────────────────────────────────────────
 
 def fetch_ndwi_pair():
-    """
-    Downloads two Sentinel-2 images for Chengalpattu:
-      1. Current  — latest available image (within last 30 days)
-      2. Previous — same time period one year ago
+    print("\n=== ArenIQ — Sentinel-2 Fetcher (Copernicus CDSE API) ===\n")
 
-    Saves them as ndwi_2024.png and ndwi_2023.png for ndwi_detection.py.
-    """
-    print("\n=== ArenIQ — Sentinel-2 Image Fetcher ===\n")
+    token = get_access_token()
+    today = datetime.now(timezone.utc)
 
-    api = connect_to_copernicus()
-
-    today    = datetime.utcnow()
-    one_year = timedelta(days=365)
-
-    # Date ranges
-    current_from  = today - timedelta(days=30)
-    current_to    = today
-    previous_from = current_from - one_year
-    previous_to   = current_to  - one_year
+    pairs = [
+        ("current",  today - timedelta(days=30),       today,                       NDWI_CURRENT),
+        ("previous", today - timedelta(days=30 + 365), today - timedelta(days=365), NDWI_PREVIOUS),
+    ]
 
     results = {}
 
-    for label, date_from, date_to, output_file in [
-        ("current",  current_from,  current_to,  NDWI_CURRENT),
-        ("previous", previous_from, previous_to, NDWI_PREVIOUS),
-    ]:
+    for label, date_from, date_to, output_file in pairs:
         print(f"\n--- Fetching {label.upper()} image ---")
 
-        products_df = search_sentinel_images(api, date_from, date_to)
-
-        if products_df is None:
-            print(f"[!] Skipping {label} image — no suitable images found")
+        products = search_images(date_from, date_to)
+        if not products:
+            print(f"[!] No images found for {label}")
             continue
 
-        # Use the least cloudy product
-        best_product = products_df.iloc[0]
-        product_id   = best_product.name
+        best = products[0]
+        print(f"    Product: {best['Name']}")
 
-        # Download
-        safe_path = download_image(api, product_id, DOWNLOAD_DIR / label)
+        zip_path = download_image(best, token, DOWNLOAD_DIR / label)
+        if zip_path:
+            ndwi = compute_ndwi_from_zip(zip_path, Path(output_file))
+            if ndwi is not None:
+                results[label] = output_file
 
-        # Compute NDWI and save
-        compute_ndwi_from_safe(safe_path, Path(output_file))
-        results[label] = output_file
-
-    # Summary
-    print("\n=== Fetch Complete ===")
-    if "current" in results and "previous" in results:
-        print(f"[✓] Both images ready:")
-        print(f"    Current  → {NDWI_CURRENT}")
-        print(f"    Previous → {NDWI_PREVIOUS}")
-        print(f"\n    Run ndwi_detection.py to detect encroachments!")
+    print("\n=== Summary ===")
+    if len(results) == 2:
+        print(f"[✓] Both NDWI images ready!")
+        print(f"    {NDWI_CURRENT}  — current period")
+        print(f"    {NDWI_PREVIOUS} — previous period")
+        print(f"\n    Next step: python ndwi_detection.py")
         return True
     else:
-        print("[!] One or both images could not be downloaded.")
-        print("    Check your Copernicus credentials and try again.")
+        print(f"[!] {len(results)}/2 images fetched")
         return False
 
 
