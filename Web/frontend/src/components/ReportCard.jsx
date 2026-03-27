@@ -22,6 +22,25 @@ function ReportCard({ report, actions }) {
         </span>
       </div>
 
+      {/* Add this block somewhere visible, e.g. after description */}
+  <div className="mt-3 flex flex-wrap gap-3">
+    {report.severity_label && (
+    <span
+      className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+        report.severity_label === "Critical" ? "bg-red-100 text-red-800" :
+        report.severity_label === "High"     ? "bg-orange-100 text-orange-800" :
+        report.severity_label === "Medium"   ? "bg-yellow-100 text-yellow-800" :
+        "bg-green-100 text-green-800"
+      }`}
+    >
+      Severity: {report.severity_label} ({report.severity_score || "?"}) 
+    </span>
+    )}
+    <span className="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800">
+      Escalation Level: {report.escalation_level || 1}
+    </span>
+  </div>
+
       <div className="mt-5 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">
         <div className="rounded-2xl bg-slate-50 p-3">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Reported By</p>

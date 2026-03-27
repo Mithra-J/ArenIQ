@@ -8,8 +8,13 @@ const uploadRouter = require("./routes/upload");
 const waterbodiesRouter = require("./routes/waterbodies");
 const satelliteRouter = require("./routes/satellite");
 const weatherRouter = require("./routes/weather");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+const { startEscalationScheduler } = require("./escalation");
 
 const app = express();
+
+app.use(helmet());
 
 app.use(
   cors({
@@ -41,7 +46,24 @@ app.use((error, _req, res, _next) => {
   });
 });
 
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { error: "Too many requests – please try again later" }
+});
+app.use(limiter);
+
+// START ESCALATION ENGINE
+startEscalationScheduler();
+
 const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`[ArenIQ] Backend listening on http://localhost:${PORT}`);
+  console.log(`[✓] Escalation scheduler running (every hour)`);
+  console.log(`[✓] Helmet + Rate limiting enabled (production mode)`);
+});
+
 
 app.listen(PORT, () => {
   console.log(`[ArenIQ] Backend listening on http://localhost:${PORT}`);
