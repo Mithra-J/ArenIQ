@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../main.dart';
-import 'report_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';   // ← Changed to Firebase Auth
 import 'login_screen.dart';
+import 'report_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +14,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalReports = 0;
   int _resolvedReports = 0;
   bool _loading = true;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← NEW for Firebase sign out
 
   @override
   void initState() {
@@ -49,14 +50,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // ==================== UPDATED: Firebase Sign Out ====================
   Future<void> _signOut() async {
-    await supabase.auth.signOut();
-    if (mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-        (_) => false,
-      );
+    try {
+      await _auth.signOut();                    // ← Changed from Supabase to Firebase
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (_) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign out failed: $e')),
+        );
+      }
     }
   }
 
@@ -76,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: _signOut,
+            onPressed: _signOut,                    // ← Now calls Firebase sign out
           ),
         ],
       ),
@@ -192,6 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// StatCard and InfoTile widgets remain unchanged
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
@@ -214,7 +225,7 @@ class _StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black..withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -273,10 +284,8 @@ class _InfoTile extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              Text(subtitle,
-                  style: const TextStyle(color: Colors.grey, fontSize: 13)),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 13)),
             ],
           ),
         ],

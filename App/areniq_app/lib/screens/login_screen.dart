@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../main.dart';
+import 'package:firebase_auth/firebase_auth.dart';   // ← NEW: Added for Firebase OTP
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,8 +11,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _phoneController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← NEW: Firebase Auth instance
   bool _loading = false;
 
+  // ==================== UPDATED: Firebase OTP Send Logic ====================
   Future<void> _sendOtp() async {
     final phone = _phoneController.text.trim();
 
@@ -26,20 +27,49 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() => _loading = true);
 
+    final String fullPhoneNumber = '+91$phone';
+
     try {
-      await supabase.auth.signInWithOtp(phone: '+91$phone');
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OtpScreen(phone: '+91$phone'),
-          ),
-        );
-      }
-    } on AuthException catch (e) {
+      await _auth.verifyPhoneNumber(
+        phoneNumber: fullPhoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // Auto verification (rare on Android)
+          await _auth.signInWithCredential(credential);
+          if (mounted) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (_) => false,
+            );
+          }
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed: ${e.message}')),
+            );
+          }
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          // OTP sent successfully → Navigate to OTP screen
+          if (mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => OtpScreen(
+                  phone: fullPhoneNumber,
+                  verificationId: verificationId,   // ← Passing verificationId for Firebase
+                ),
+              ),
+            );
+          }
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {},
+      );
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
+          SnackBar(content: Text('Error sending OTP: $e')),
         );
       }
     } finally {

@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';   // ← Added only for Firebase OTP sign-out
 import '../main.dart';
+import 'home_screen.dart';   // Added for navigation after sign-out
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -19,6 +21,8 @@ class _ReportScreenState extends State<ReportScreen> {
   final _captionController = TextEditingController();
   bool _loading = false;
   bool _locationLoading = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← Added for Firebase sign-out
 
   final List<String> _encroachmentTypes = [
     'Construction / Building',
@@ -61,8 +65,8 @@ class _ReportScreenState extends State<ReportScreen> {
 
       final position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
-  accuracy: LocationAccuracy.high,
-),
+          accuracy: LocationAccuracy.high,
+        ),
       );
       setState(() => _position = position);
     } catch (e) {
@@ -145,6 +149,26 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
+  // ==================== UPDATED: Firebase Sign Out (Only change for OTP config) ====================
+  Future<void> _signOut() async {
+    try {
+      await _auth.signOut();   // Using Firebase Auth instead of Supabase
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          (_) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sign out failed: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,6 +179,12 @@ class _ReportScreenState extends State<ReportScreen> {
           style: TextStyle(color: Colors.white),
         ),
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _signOut,        // ← Now uses Firebase sign-out
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),

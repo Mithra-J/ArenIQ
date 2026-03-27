@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../main.dart';
+import 'package:firebase_auth/firebase_auth.dart';   // ← NEW: Firebase Auth
 import 'home_screen.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phone;
-  const OtpScreen({super.key, required this.phone});
+  final String verificationId;        // ← NEW: Required for Firebase
+
+  const OtpScreen({
+    super.key,
+    required this.phone,
+    required this.verificationId,
+  });
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -13,8 +18,10 @@ class OtpScreen extends StatefulWidget {
 
 class _OtpScreenState extends State<OtpScreen> {
   final _otpController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← NEW
   bool _loading = false;
 
+  // ==================== UPDATED: Firebase OTP Verification ====================
   Future<void> _verifyOtp() async {
     final otp = _otpController.text.trim();
 
@@ -28,11 +35,12 @@ class _OtpScreenState extends State<OtpScreen> {
     setState(() => _loading = true);
 
     try {
-      await supabase.auth.verifyOTP(
-        phone: widget.phone,
-        token: otp,
-        type: OtpType.sms,
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: otp,
       );
+
+      await _auth.signInWithCredential(credential);
 
       if (mounted) {
         Navigator.pushAndRemoveUntil(
@@ -41,10 +49,24 @@ class _OtpScreenState extends State<OtpScreen> {
           (_) => false,
         );
       }
-    } on AuthException catch (e) {
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'Invalid OTP';
+      
+      if (e.code == 'invalid-verification-code') {
+        errorMessage = 'Incorrect OTP. Please try again.';
+      } else if (e.code == 'session-expired') {
+        errorMessage = 'Session expired. Please request OTP again.';
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Verification failed: $e')),
         );
       }
     } finally {
@@ -60,6 +82,7 @@ class _OtpScreenState extends State<OtpScreen> {
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
+        title: const Text('Verify OTP'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -127,6 +150,19 @@ class _OtpScreenState extends State<OtpScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Go back to login screen to resend OTP
+                },
+                child: const Text(
+                  'Resend OTP',
+                  style: TextStyle(color: Colors.white70),
+                ),
               ),
             ),
           ],

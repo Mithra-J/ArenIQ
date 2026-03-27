@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "613167135475",
+    "project_id": "areniq-70560",
+    "storage_bucket": "areniq-70560.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613167135475:android:f473ea6cc0124a109f5586",
+        "android_client_info": {
+          "package_name": "com.company.ArenIQ"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnWldZRhMZnxmLvMDBg9jR132OEzimPYQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
