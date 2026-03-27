@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';   // ← Changed to Firebase Auth
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login_screen.dart';
 import 'report_screen.dart';
 
@@ -14,8 +14,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _totalReports = 0;
   int _resolvedReports = 0;
   bool _loading = true;
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← NEW for Firebase sign out
 
   @override
   void initState() {
@@ -50,10 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // ==================== UPDATED: Firebase Sign Out ====================
+  // ==================== Supabase Sign Out ====================
   Future<void> _signOut() async {
     try {
-      await _auth.signOut();                    // ← Changed from Supabase to Firebase
+      await supabase.auth.signOut();
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -86,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: _signOut,                    // ← Now calls Firebase sign out
+            onPressed: _signOut,
           ),
         ],
       ),

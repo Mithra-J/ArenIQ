@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';   // ← NEW: Added for Firebase OTP
+import 'package:supabase_flutter/supabase_flutter.dart';   // ← Changed back to Supabase
 import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,65 +11,46 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _phoneController = TextEditingController();
-  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← NEW: Firebase Auth instance
   bool _loading = false;
 
-  // ==================== UPDATED: Firebase OTP Send Logic ====================
+  // ==================== UPDATED: Supabase Phone OTP Send Logic ====================
+  // Using Supabase's built-in Phone Authentication (signInWithOtp + verifyOTP)
   Future<void> _sendOtp() async {
     final phone = _phoneController.text.trim();
 
-    if (phone.isEmpty || phone.length < 10) {
+    if (phone.isEmpty || phone.length != 10) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
+        const SnackBar(content: Text('Please enter a valid 10-digit phone number')),
       );
       return;
     }
 
     setState(() => _loading = true);
 
-    final String fullPhoneNumber = '+91$phone';
-
     try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: fullPhoneNumber,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto verification (rare on Android)
-          await _auth.signInWithCredential(credential);
-          if (mounted) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (_) => false,
-            );
-          }
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Failed: ${e.message}')),
-            );
-          }
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          // OTP sent successfully → Navigate to OTP screen
-          if (mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => OtpScreen(
-                  phone: fullPhoneNumber,
-                  verificationId: verificationId,   // ← Passing verificationId for Firebase
-                ),
-              ),
-            );
-          }
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {},
+      await supabase.auth.signInWithOtp(
+        phone: '+91$phone',
+        // You can add options here later if needed (e.g., captcha)
       );
+
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => OtpScreen(phone: '+91$phone'),
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message ?? 'Failed to send OTP')),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending OTP: $e')),
+          SnackBar(content: Text('Something went wrong: $e')),
         );
       }
     } finally {

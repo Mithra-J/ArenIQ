@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:firebase_auth/firebase_auth.dart';   // ← Added only for Firebase OTP sign-out
 import '../main.dart';
-import 'home_screen.dart';   // Added for navigation after sign-out
+import 'home_screen.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -21,8 +20,6 @@ class _ReportScreenState extends State<ReportScreen> {
   final _captionController = TextEditingController();
   bool _loading = false;
   bool _locationLoading = false;
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;   // ← Added for Firebase sign-out
 
   final List<String> _encroachmentTypes = [
     'Construction / Building',
@@ -149,10 +146,10 @@ class _ReportScreenState extends State<ReportScreen> {
     }
   }
 
-  // ==================== UPDATED: Firebase Sign Out (Only change for OTP config) ====================
+  // ==================== Supabase Sign Out (Only change for consistency) ====================
   Future<void> _signOut() async {
     try {
-      await _auth.signOut();   // Using Firebase Auth instead of Supabase
+      await supabase.auth.signOut();
       if (mounted) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -182,7 +179,7 @@ class _ReportScreenState extends State<ReportScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: _signOut,        // ← Now uses Firebase sign-out
+            onPressed: _signOut,
           ),
         ],
       ),
