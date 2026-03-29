@@ -63,8 +63,8 @@ IMG_BOUNDS = {
 
 # Load env vars for Supabase
 load_dotenv()
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_SERVICE_ROLE = os.getenv("SUPABASE_SERVICE_ROLE")
+SUPABASE_URL = os.getenv("VITE_SUPABASE_URL")
+SUPABASE_SERVICE_ROLE = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 if not SUPABASE_URL or not SUPABASE_SERVICE_ROLE:
     raise ValueError("Supabase environment variables not set")  # TEAM NOTE: Create .env file with keys
 
@@ -236,45 +236,84 @@ def generate_report(zones):
 # STEP 6 — SUPABASE INTEGRATION (NEW: Upload + Insert)
 # ─────────────────────────────────────────────
 
+
+def resize_image_for_upload(image_path, max_size_mb=40):
+    """Resize image to be under Supabase limit (default 40MB)"""
+    img = cv2.imread(image_path)
+    if img is None:
+        return image_path  # fallback
+
+    # Get current size
+    height, width = img.shape[:2]
+    print(f"[i] Original image size: {width}x{height}")
+
+    # Calculate resize factor to keep it reasonable (e.g. max 2000px width)
+    max_dimension = 2000
+    if max(width, height) > max_dimension:
+        scale = max_dimension / max(width, height)
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        img = cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        print(f"[✓] Resized image to: {new_width}x{new_height}")
+
+    # Save resized version
+    resized_path = "labelled_change_map.png"
+    cv2.imwrite(resized_path, img, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+    print(f"[✓] Saved resized image: {resized_path}")
+    return resized_path
+
+
 def upload_and_insert_to_supabase(zones, labelled_path):
+    """
+    Resize image first, then upload to Supabase Storage and insert reports.
+    """
     """
     TEAM NOTE: New function — uploads labelled map to Supabase Storage,
     then inserts one report per zone. Triggers backend alert via POST /report.
     """
     # Upload image to Storage (bucket: 'encroachment-images')
+    # Resize image to avoid "Payload too large" error
+    resized_path = resize_image_for_upload(labelled_path)
+
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     filename = f"ndwi_change_{timestamp}.png"
-    bucket = "encroachment-images"  # TEAM NOTE: Create this bucket in Supabase dashboard
+    bucket = "encroachment-images"   # Make sure this matches exactly
 
-    with open(labelled_path, "rb") as f:
-        upload_res = supabase.storage.from_(bucket).upload(filename, f, {"content-type": "image/png"})
+    try:
+        with open(resized_path, "rb") as f:
+            upload_res = supabase.storage.from_(bucket).upload(
+                filename, f, {"content-type": "image/png"}
+            )
 
-    if upload_res:  # TEAM NOTE: Check for errors
         public_url = supabase.storage.from_(bucket).get_public_url(filename)
-        print(f"[✓] Image uploaded: {public_url}")
+        print(f"[✓] Image uploaded successfully → {public_url}")
 
         # Insert one report per zone
         for zone in zones:
             data = {
-                "id": str(uuid.uuid4()),  # TEAM NOTE: Unique ID
-                "type": zone["type"].lower().replace(" ", "_"),  # e.g., "construction"
+                "id": str(uuid.uuid4()),
+                "type": zone["type"].lower().replace(" ", "_"),
                 "description": f"Auto-detected {zone['type']} via NDWI — {zone['confidence']}% confidence, {zone['area_px']} px",
-                "latitude": zone["latitude"],
-                "longitude": zone["longitude"],
+                "latitude": zone.get("latitude"),
+                "longitude": zone.get("longitude"),
                 "image_url": public_url,
                 "source": "satellite",
                 "status": "pending",
-                "escalation_level": 1,  # TEAM NOTE: Starts at level 1
+                "escalation_level": 1,
                 "reminder_sent": False,
                 "confidence": zone["confidence"],
                 "area_px": zone["area_px"]
             }
 
             insert_res = supabase.table("reports").insert(data).execute()
+
             if insert_res.data:
                 print(f"[✓] Inserted satellite report for zone {zone['id']}")
             else:
                 print(f"[✗] Insert failed for zone {zone['id']}: {insert_res.error}")
+
+    except Exception as e:
+        print(f"[✗] Supabase upload/insert error: {e}")
 
 # ─────────────────────────────────────────────
 # MAIN PIPELINE (updated to call new Supabase func)
