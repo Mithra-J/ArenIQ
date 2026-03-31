@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';   // ← Changed back to Supabase
-import 'otp_screen.dart';
-
+import 'package:areniq_app/screens/otp_screen.dart';
+final supabase = Supabase.instance.client;
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,49 +15,43 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // ==================== UPDATED: Supabase Phone OTP Send Logic ====================
   // Using Supabase's built-in Phone Authentication (signInWithOtp + verifyOTP)
-  Future<void> _sendOtp() async {
-    final phone = _phoneController.text.trim();
+Future<void> _sendOtp() async {
+  final phone = _phoneController.text.trim();
 
-    if (phone.isEmpty || phone.length != 10) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid 10-digit phone number')),
-      );
-      return;
-    }
-
-    setState(() => _loading = true);
-
-    try {
-      await supabase.auth.signInWithOtp(
-        phone: '+91$phone',
-        // You can add options here later if needed (e.g., captcha)
-      );
-
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OtpScreen(phone: '+91$phone'),
-          ),
-        );
-      }
-    } on AuthException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message ?? 'Failed to send OTP')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
-    }
+  if (phone.isEmpty || phone.length != 10) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please enter a valid 10-digit phone number')),
+    );
+    return;
   }
 
+  setState(() => _loading = true);
+
+  try {
+    // 🚫 REMOVE Firebase completely
+    // ✅ DIRECTLY GO TO OTP SCREEN (demo flow)
+
+    await Future.delayed(const Duration(seconds: 1)); // fake loading
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OtpScreen(
+            phone: '+91$phone',
+            verificationId: "demo", // fake
+          ),
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Something went wrong: $e')),
+    );
+  } finally {
+    if (mounted) setState(() => _loading = false);
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(

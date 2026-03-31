@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _fetchStats();
   }
-
+final supabase = Supabase.instance.client;
   Future<void> _fetchStats() async {
     try {
       // Total encroachments reported
