@@ -89,38 +89,37 @@ class _ReportScreenState extends State<ReportScreen> {
       if (_image == null) _image = File('assets/dummy.jpg');
       if (_position == null) {
         _position ??= Position(
-  latitude: 12.8241,
-  longitude: 80.1931,
-  timestamp: DateTime.now(),
-  accuracy: 1.0,
-  altitude: 0.0,
-  heading: 0.0,
-  speed: 0.0,
-  speedAccuracy: 0.0,
-  altitudeAccuracy: 0.0,     
-  headingAccuracy: 0.0,       
-);
-      
+          latitude: 12.8241,
+          longitude: 80.1931,
+          timestamp: DateTime.now(),
+          accuracy: 1.0,
+          altitude: 0.0,
+          heading: 0.0,
+          speed: 0.0,
+          speedAccuracy: 0.0,
+          altitudeAccuracy: 0.0,
+          headingAccuracy: 0.0,
+        );
       }
       _image ??= File('assets/dummy.jpg');
-_selectedType ??= _encroachmentTypes.first;
+      _selectedType ??= _encroachmentTypes.first;
       final userId = supabase.auth.currentUser?.id ?? 'anonymous';
-      final fileName =
-          '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName = '${userId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       // ===== IMAGE UPLOAD (errors logged only) =====
       try {
         final bytes = await _image!.readAsBytes();
-        await supabase.storage
-            .from('report-images')
-            .uploadBinary(fileName, bytes,
-                fileOptions: const FileOptions(contentType: 'image/jpeg'));
+        await supabase.storage.from('report-images').uploadBinary(
+            fileName, bytes,
+            fileOptions: const FileOptions(contentType: 'image/jpeg'));
       } catch (e) {
         print('⚠️ Image upload failed: $e');
       }
 
-      final imageUrl =
-          supabase.storage.from('report-images').getPublicUrl(fileName).toString();
+      final imageUrl = supabase.storage
+          .from('report-images')
+          .getPublicUrl(fileName)
+          .toString();
 
       // ===== REPORT INSERT (errors logged only) =====
       try {
@@ -222,8 +221,7 @@ _selectedType ??= _encroachmentTypes.first;
                     : const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.add_a_photo,
-                              size: 48, color: Colors.grey),
+                          Icon(Icons.add_a_photo, size: 48, color: Colors.grey),
                           SizedBox(height: 8),
                           Text('Tap to take photo',
                               style: TextStyle(color: Colors.grey)),
@@ -295,9 +293,8 @@ _selectedType ??= _encroachmentTypes.first;
                       vertical: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: selected
-                          ? const Color(0xFF0D47A1)
-                          : Colors.grey[200],
+                      color:
+                          selected ? const Color(0xFF0D47A1) : Colors.grey[200],
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
